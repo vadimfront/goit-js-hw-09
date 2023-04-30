@@ -15,16 +15,17 @@ let selectedDate = null;
 const options = {
   enableTime: true,
   time_24hr: true,
-  defaultDate: new Date(),
+  defaultDate: Date.now(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
-    const currentDate = new Date();
-    if (selectedDates[0] < currentDate) {
+  onClose([selectedDates]) {
+    console.log(selectedDates);
+    const currentDate = Date.now();
+    if (selectedDates < currentDate) {
       failure('Please choose a date in the future');
       btnStart.disabled = true;
     } else {
       btnStart.disabled = false;
-      selectedDate = selectedDates[0];
+      selectedDate = selectedDates;
     }
   },
 };
@@ -32,10 +33,8 @@ const options = {
 flatpickr('#datetime-picker', options);
 
 function startTimer() {
-  const currentDate = new Date();
-  let timeDiff = selectedDate
-    ? selectedDate.getTime() - currentDate.getTime()
-    : 0;
+  const currentDate = Date.now();
+  let timeDiff = selectedDate ? selectedDate - currentDate : 0;
 
   const intervalId = setInterval(() => {
     if (timeDiff <= 0) {
@@ -43,22 +42,26 @@ function startTimer() {
       return;
     }
 
-    const { days, hours, minutes, seconds } = convertMs(timeDiff);
-
-    [...arrTimerEl].forEach(el => {
-      if (el.hasAttribute('data-days')) {
-        el.textContent = addLeadingZero(days);
-      } else if (el.hasAttribute('data-hours')) {
-        el.textContent = addLeadingZero(hours);
-      } else if (el.hasAttribute('data-minutes')) {
-        el.textContent = addLeadingZero(minutes);
-      } else if (el.hasAttribute('data-seconds')) {
-        el.textContent = addLeadingZero(seconds);
-      }
-    });
-
+    render(timeDiff);
     timeDiff -= 1000;
   }, 1000);
+}
+
+function render(timeDiff) {
+  console.log(timeDiff);
+  const { days, hours, minutes, seconds } = convertMs(timeDiff);
+
+  [...arrTimerEl].forEach(el => {
+    if (el.hasAttribute('data-days')) {
+      el.textContent = addLeadingZero(days);
+    } else if (el.hasAttribute('data-hours')) {
+      el.textContent = addLeadingZero(hours);
+    } else if (el.hasAttribute('data-minutes')) {
+      el.textContent = addLeadingZero(minutes);
+    } else if (el.hasAttribute('data-seconds')) {
+      el.textContent = addLeadingZero(seconds);
+    }
+  });
 }
 
 function addLeadingZero(value) {

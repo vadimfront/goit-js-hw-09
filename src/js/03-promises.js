@@ -22,9 +22,8 @@ function handlerSubmit(e) {
 }
 
 function handlePromise({ delay, step, amount }) {
-  let position = 1;
-  for (let i = 0; i < amount; i++) {
-    createPromise(position, delay)
+  for (let i = 1; i <= amount; i++) {
+    createPromise(i, delay)
       .then(({ position, delay }) => {
         success(`✅ Fulfilled promise ${position} in ${delay}ms`);
       })
